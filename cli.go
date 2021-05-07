@@ -89,9 +89,14 @@ func (h *CLIHandler) Auth(c *api.Client, m map[string]string) (*api.Secret, erro
 	defer listener.Close()
 
 	// Open the default browser to the callback URL.
-	fmt.Fprintf(os.Stderr, "Complete the login via your OIDC provider. Launching browser to:\n\n    %s\n\n\n", authURL)
-	if err := openURL(authURL); err != nil {
-		fmt.Fprintf(os.Stderr, "Error attempting to automatically open browser: '%s'.\nPlease visit the authorization URL manually.", err)
+	launchBrowser := m["launchbrowser"]
+	if launchBrowser != "false" {
+		fmt.Fprintf(os.Stderr, "Complete the login via your OIDC provider. Launching browser to:\n\n    %s\n\n\n", authURL)
+		if err := openURL(authURL); err != nil {
+			fmt.Fprintf(os.Stderr, "Error attempting to automatically open browser: '%s'.\nPlease visit the authorization URL manually.", err)
+		}
+	} else {
+		fmt.Fprintf(os.Stderr, "Complete the login via your OIDC provider. Visit:\n\n    %s\n\n\n", authURL)
 	}
 
 	// Start local server
